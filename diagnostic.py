@@ -1,12 +1,8 @@
 import platform
-import sys
 import socket
-import time
 import importlib
 import os
 from rich.console import Console
-from rich.text import Text
-from rich.progress import Progress, SpinnerColumn, TextColumn
 
 console = Console()
 

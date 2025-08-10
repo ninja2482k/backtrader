@@ -4,9 +4,7 @@ import time
 import sys
 import pyfiglet
 from rich.console import Console
-from rich.panel import Panel
 from rich.text import Text
-from rich.table import Table
 
 def main():
     # Generate and print the ASCII art banner
