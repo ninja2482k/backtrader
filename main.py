@@ -1,5 +1,6 @@
 
 import shutil
+import time
 import pyfiglet
 from rich.console import Console
 from rich.panel import Panel
@@ -7,6 +8,7 @@ from rich.text import Text
 from rich.table import Table
 
 def main():
+    # Generate and print the ASCII art banner
     ascii_banner = pyfiglet.figlet_format("Backtrader")
     console = Console()
 
@@ -23,35 +25,40 @@ def main():
         text.append(padded_line + "\n", style=f"bold {color}")
     console.print(text)
 
+    # Menu options and their corresponding messages
     menu_dict = {
-        "1": "Hello World selected!",
-        "2": "Start Backtest selected!",
-        "3": "View Results selected!",
-        "4": "Load Historical Data selected!",
-        "5": "Settings selected!",
+        "1": "Start Backtest selected!",
+        "2": "View Results selected!",
+        "3": "Load Historical Data selected!",
+        "4": "Settings selected!",
+        "5": "Diagnostics selected!",
         "6": "Exit selected!"
     }
     menu_options = [
-        "Hello World",
         "Start Backtest",
         "View Results",
         "Load Historical Data",
         "Settings",
+        "Diagnostics",
         "Exit"
     ]
     while True:
+        # Print menu options with color
         for idx, option in enumerate(menu_options, 1):
             color = blues[idx % len(blues)]
             menu_text = Text(f"{idx}. {option}", style=f"bold {color}")
             console.print(menu_text)
-        console.print("\nSelect an option (1-6): ", end="")
+        # Prompt user for input
+        console.print(f"\nSelect an option (1-{len(menu_options)}): ", end="")
         choice = input().strip()
+        # Handle menu selection
         if choice in menu_dict:
             console.print(f"{menu_dict[choice]}\n")
-            if choice == "6":
+            if choice == str(len(menu_options)):
+                time.sleep(1)
                 break
         else:
-            console.print("Invalid option. Please select a number between 1 and 6.\n")
+            console.print(f"Invalid option. Please select a number between 1 and {len(menu_options)}.\n")
 
 if __name__ == "__main__":
     main()
