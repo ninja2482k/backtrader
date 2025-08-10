@@ -1,6 +1,7 @@
 
 import shutil
 import time
+import sys
 import pyfiglet
 from rich.console import Console
 from rich.panel import Panel
@@ -54,6 +55,9 @@ def main():
         # Handle menu selection
         if choice in menu_dict:
             console.print(f"{menu_dict[choice]}\n")
+            if choice == "5":
+                import subprocess
+                subprocess.run([sys.executable, "diagnostic.py"])
             if choice == str(len(menu_options)):
                 time.sleep(1)
                 break
