@@ -1,66 +1,106 @@
-
 import shutil
 import time
 import sys
+import subprocess
 import pyfiglet
 from rich.console import Console
 from rich.text import Text
 
-def main():
-    # Generate and print the ASCII art banner
-    ascii_banner = pyfiglet.figlet_format("Backtrader")
-    console = Console()
-
-    # Blue gradient colors
-    blues = ["#0d47a1", "#1976d2", "#2196f3", "#64b5f6", "#90caf9", "#42a5f5", "#1e88e5", "#1565c0"]
+def build_banner_text(title: str, colors: list[str]) -> Text:
+    ascii_banner = pyfiglet.figlet_format(title)
     banner_lines = ascii_banner.splitlines()
     term_width = shutil.get_terminal_size((80, 20)).columns
     max_len = max(len(line) for line in banner_lines)
     pad_width = max(term_width, max_len)
     text = Text()
     for i, line in enumerate(banner_lines):
-        color = blues[i % len(blues)]
+        color = colors[i % len(colors)]
         padded_line = line.center(pad_width)
         text.append(padded_line + "\n", style=f"bold {color}")
-    console.print(text)
+    return text
 
-    # Menu options and their corresponding messages
-    menu_dict = {
-        "1": "Start Backtest selected!",
-        "2": "View Results selected!",
-        "3": "Load Historical Data selected!",
-        "4": "Settings selected!",
-        "5": "Diagnostics selected!",
-        "6": "Exit selected!"
-    }
+
+def print_menu(console: Console, options: list[str], colors: list[str]) -> None:
+    for idx, option in enumerate(options, 1):
+        color = colors[idx % len(colors)]
+        menu_text = Text(f"{idx}. {option}", style=f"bold {color}")
+        console.print(menu_text)
+
+
+def prompt_choice(console: Console, num_options: int) -> str:
+    console.print(f"\nSelect an option (1-{num_options}) or press Enter to exit: ", end="")
+    return input().strip()
+
+
+def pause_and_return(console: Console, banner_text: Text) -> None:
+    console.print("\nPress Enter to return to the menu...", style="dim")
+    input()
+    console.clear()
+    console.print(banner_text)
+
+
+def main():
+    console = Console()
+
+    # Colors and banner
+    blues = [
+        "#0d47a1",
+        "#1976d2",
+        "#2196f3",
+        "#64b5f6",
+        "#90caf9",
+        "#42a5f5",
+        "#1e88e5",
+        "#1565c0",
+    ]
+    banner_text = build_banner_text("Backtrader", blues)
+    console.print(banner_text)
+
+    # Menu config
     menu_options = [
         "Start Backtest",
         "View Results",
         "Load Historical Data",
         "Settings",
         "Diagnostics",
-        "Exit"
     ]
+    menu_messages = {
+        "1": "Start Backtest selected!",
+        "2": "View Results selected!",
+        "3": "Load Historical Data selected!",
+        "4": "Settings selected!",
+        "5": "Diagnostics selected!",
+    }
+
     while True:
-        # Print menu options with color
-        for idx, option in enumerate(menu_options, 1):
-            color = blues[idx % len(blues)]
-            menu_text = Text(f"{idx}. {option}", style=f"bold {color}")
-            console.print(menu_text)
-        # Prompt user for input
-        console.print(f"\nSelect an option (1-{len(menu_options)}): ", end="")
-        choice = input().strip()
-        # Handle menu selection
-        if choice in menu_dict:
-            console.print(f"{menu_dict[choice]}\n")
+        # Render menu
+        print_menu(console, menu_options, blues)
+
+        # Read choice
+        choice = prompt_choice(console, len(menu_options))
+        if choice == "":
+            time.sleep(2)
+            break
+
+        # Handle selection
+        if choice in menu_messages:
+            console.clear()
+            console.print(menu_messages[choice])
+
+            if choice == "1":
+                subprocess.run([sys.executable, "core_engine.py"])
+                pause_and_return(console, banner_text)
+                continue
+
             if choice == "5":
-                import subprocess
                 subprocess.run([sys.executable, "diagnostic.py"])
-            if choice == str(len(menu_options)):
-                time.sleep(1)
-                break
-        else:
-            console.print(f"Invalid option. Please select a number between 1 and {len(menu_options)}.\n")
+                pause_and_return(console, banner_text)
+                continue
+
+            pause_and_return(console, banner_text)
+            continue
+
+        console.print(f"Invalid option. Please select a number between 1 and {len(menu_options)}.\n")
 
 if __name__ == "__main__":
     main()
