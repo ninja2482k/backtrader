@@ -87,6 +87,11 @@ def main():
             console.clear()
             console.print(menu_messages[choice])
 
+            if choice == "1":
+                subprocess.run([sys.executable, "core_engine.py"])
+                pause_and_return(console, banner_text)
+                continue
+
             if choice == "5":
                 subprocess.run([sys.executable, "diagnostic.py"])
                 pause_and_return(console, banner_text)
